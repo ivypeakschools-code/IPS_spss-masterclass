@@ -95,13 +95,20 @@ th{background:#eef2f7}
 footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
 @media(max-width:650px){.card{padding:16px}.cert{padding:22px}.spsstabs{overflow:auto}}
 
-/* ===== PRINT STYLES – certificate only ===== */
+/* ===== PRINT STYLES – only certificate visible ===== */
 @media print {
   body * { visibility: hidden; }
   .cert, .cert * { visibility: visible; }
-  .cert { position: absolute; left: 0; top: 0; width: 100%; border: 7px double #173b72; padding: 40px; }
-  .cert .no-print { display: none !important; }
-  .cert #certPhone, .cert #certAffil, .cert #certCode { display: inline !important; }
+  .cert { 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; 
+    background: white; 
+    border: 7px double #173b72; 
+    padding: 40px;
+    box-sizing: border-box;
+  }
+  .no-print { display: none !important; }
   header, nav, .tab, .progress, .card:not(.cert) { display: none !important; }
 }
 
@@ -441,7 +448,16 @@ table { display: block !important; overflow-x: auto !important; white-space: now
         </div>
         <div id="badges"></div>
 
-        <div id="certArea" style="display:none" class="cert">
+        <!-- This div shows when requirements are met but not yet submitted -->
+        <div id="submitGate" style="display:none;" class="callout success">
+          <p><strong>🎉 You have met all the requirements!</strong></p>
+          <p>Please click the <strong>"Submit Results"</strong> button below to generate your certificate. Your results will be recorded.</p>
+          <button class="btn" onclick="submitResultsToSheets()" style="margin-top:10px;">📤 Submit Results</button>
+          <p id="submitMsg" style="margin-top:8px; font-weight:bold;"></p>
+        </div>
+
+        <!-- The actual certificate – hidden until successful submission -->
+        <div id="certArea" style="display:none;" class="cert">
           <h2>CERTIFICATE OF COMPETENCE</h2>
           <p>This certifies that</p>
           <h1 id="certName"></h1>
@@ -453,11 +469,9 @@ table { display: block !important; overflow-x: auto !important; white-space: now
           <p><b>Ivy Peak Educational Services Ltd</b><br>2026</p>
           <p>_________________________________<br>Prof. O. A. Adepoju</p>
           <p><small id="certDate"></small><br><small id="certId"></small></p>
-          <!-- Buttons: Submit Results first, then Print -->
-          <button class="btn" onclick="submitResultsToSheets()" style="margin:10px 0;">📤 Submit Results</button>
           <button class="btn secondary no-print" onclick="window.print()" style="margin:10px 0;">🖨️ Print / Save as PDF</button>
-          <p id="submitMsg" style="margin-top:10px; font-weight:bold;"></p>
         </div>
+
         <div id="notYet" class="callout warn">To unlock your certificate, you need <b>at least 50% in every module</b> and <b>70% overall</b>. Keep working through the modules!</div>
       </div>
     </section>
@@ -493,6 +507,7 @@ const ACCESS_CODE = "IVYPEAK2026";
 let user = "", phone = "", affiliation = "", participantCode = "";
 let score = 0, answered = new Set(), tasks = new Set(), current = 0;
 let examSubmitted = false, examPct = 0;
+let requirementsMet = false; // flag for passing conditions
 
 /* competency point trackers: earned / max */
 const cat = {
@@ -516,7 +531,7 @@ function start(){
   if(!a){ gateMsg.textContent = "Please enter your institutional affiliation."; gateMsg.style.color="var(--red)"; return; }
   if(c !== ACCESS_CODE){ gateMsg.textContent = "That access code is not recognised. Please check with your facilitator."; gateMsg.style.color="var(--red)"; return; }
   user = n; phone = p; affiliation = a;
-  // generate unique participant code: first 4 letters of name + last 4 digits of phone + timestamp hash
+  // generate unique participant code
   let namePart = n.replace(/\s/g,'').slice(0,4).toUpperCase();
   let phonePart = p.replace(/\D/g,'').slice(-4);
   let hash = Math.abs(hashCode(n + p + Date.now())).toString().slice(0,4);
@@ -949,7 +964,6 @@ function gradeFinal(){
   if(examPct>=50) tasks.add("exam");
   update();
   dashboard();
-  setTimeout(submitResultsToSheets, 1500);
 }
 
 /* ---------- Dashboard & certificate ---------- */
@@ -972,27 +986,21 @@ function dashboard(){
   document.getElementById("badges").innerHTML = requiredTasks.filter(t=>tasks.has(t)).map(()=>`<span class="badge">🏅</span>`).join("");
 
   if(pass){
+    requirementsMet = true;
+    // Hide the default "notYet" message, show the submit gate
     document.getElementById("notYet").style.display = "none";
-    document.getElementById("certArea").style.display = "block";
-    document.getElementById("certName").textContent = user;
-    document.getElementById("certPhone").textContent = "📞 " + phone;
-    document.getElementById("certAffil").textContent = "🏛️ " + affiliation;
-    document.getElementById("certCode").textContent = participantCode;
-    let level = overall>=85 ? "ADVANCED INTRODUCTORY" : "INTRODUCTORY";
-    document.getElementById("certLevel").textContent = level;
-    document.getElementById("certScore").textContent = overall + "%";
-    let today = new Date();
-    document.getElementById("certDate").textContent = "Date issued: " + today.toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});
-    let idNum = Math.abs(hashCode(user + today.toDateString())).toString().slice(0,4).padStart(4,"0");
-    document.getElementById("certId").textContent = "Certificate ID: IPS-SPSS-2026-" + idNum;
+    document.getElementById("submitGate").style.display = "block";
+    document.getElementById("certArea").style.display = "none"; // hidden until submission
   } else {
+    requirementsMet = false;
     document.getElementById("notYet").style.display = "block";
+    document.getElementById("submitGate").style.display = "none";
     document.getElementById("certArea").style.display = "none";
   }
 }
 
 /* ============================================================
-   GOOGLE SHEETS SUBMISSION – Fixed CORS and error handling
+   GOOGLE SHEETS SUBMISSION – with forced certificate reveal
    ============================================================ */
 const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwGK3ih_DzeIC6vNP-gClTGDuVkYOZw9kNLfpy_feye1qJtLDg0JvTTmgvMBqudgRphMg/exec';
 
@@ -1003,35 +1011,55 @@ function submitResultsToSheets() {
 
   const data = collectResultsData();
 
-  // Send using fetch with CORS mode
   fetch(SHEETS_WEBAPP_URL, {
     method: 'POST',
     mode: 'cors',
     credentials: 'omit',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
     .then(response => {
       if (response.ok) {
-        msg.textContent = '✅ Results submitted successfully to Google Sheets!';
+        msg.textContent = '✅ Results submitted successfully!';
         msg.style.color = 'var(--green)';
-        // Remove from queue if any
         localStorage.removeItem('spss_submit_queue');
+        // Now reveal the certificate
+        revealCertificate();
       } else {
         throw new Error('Server responded with ' + response.status);
       }
     })
     .catch(err => {
       console.warn('Submit failed, queuing for retry:', err);
-      // Fallback to queue
       const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
       queue.push(data);
       localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
-      msg.textContent = '⚠️ Offline – data saved locally and will be sent when you reconnect.';
+      msg.textContent = '⚠️ Offline – data saved locally. You can retry when online.';
       msg.style.color = 'var(--amber)';
+      // Optionally still show certificate? We'll keep it hidden until confirmed.
     });
+}
+
+function revealCertificate() {
+  // Populate certificate fields
+  document.getElementById("certName").textContent = user;
+  document.getElementById("certPhone").textContent = "📞 " + phone;
+  document.getElementById("certAffil").textContent = "🏛️ " + affiliation;
+  document.getElementById("certCode").textContent = participantCode;
+  const overall = parseInt(document.getElementById('dashPct').textContent);
+  let level = overall >= 85 ? "ADVANCED INTRODUCTORY" : "INTRODUCTORY";
+  document.getElementById("certLevel").textContent = level;
+  document.getElementById("certScore").textContent = overall + "%";
+  let today = new Date();
+  document.getElementById("certDate").textContent = "Date issued: " + today.toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});
+  let idNum = Math.abs(hashCode(user + today.toDateString())).toString().slice(0,4).padStart(4,"0");
+  document.getElementById("certId").textContent = "Certificate ID: IPS-SPSS-2026-" + idNum;
+
+  // Hide submit gate, show certificate
+  document.getElementById("submitGate").style.display = "none";
+  document.getElementById("certArea").style.display = "block";
+  // Also remove the notYet message if present
+  document.getElementById("notYet").style.display = "none";
 }
 
 function collectResultsData() {
@@ -1060,8 +1088,6 @@ function collectResultsData() {
 window.addEventListener('online', () => {
   const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
   if (queue.length > 0) {
-    console.log('🌐 Online – retrying queued submissions...');
-    // We'll just call submit again with the first queued item
     const data = queue[0];
     fetch(SHEETS_WEBAPP_URL, {
       method: 'POST',
@@ -1074,8 +1100,10 @@ window.addEventListener('online', () => {
         queue.shift();
         localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
         console.log('✅ Queued submission sent.');
-        const msg = document.getElementById('submitMsg');
-        if (msg) { msg.textContent = '✅ Results sent successfully!'; msg.style.color = 'var(--green)'; }
+        // If certificate not yet shown, reveal it
+        if (document.getElementById('certArea').style.display === 'none' && requirementsMet) {
+          revealCertificate();
+        }
       })
       .catch(() => { /* keep in queue */ });
   }
