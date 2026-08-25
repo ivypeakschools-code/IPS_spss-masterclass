@@ -414,7 +414,7 @@ table { display: block !important; overflow-x: auto !important; white-space: now
     <section class="section">
       <div class="card">
         <h2>8. Practical Examination</h2>
-        <p>Demonstrate introductory competence across all six skill areas. You need at least <b>70% overall</b>, and at least <b>70%</b> on this examination itself, to unlock your certificate.</p>
+        <p>Demonstrate introductory competence across all six skill areas. You need a <b>minimum of 50% in every module</b> and <b>at least 70% overall</b> to unlock your certificate.</p>
         <div id="finalQuiz"></div>
         <button onclick="gradeFinal()">Submit Final Examination</button>
         <div id="finalFb" class="feedback"></div>
@@ -447,7 +447,7 @@ table { display: block !important; overflow-x: auto !important; white-space: now
           <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
           <button class="btn" onclick="submitResultsToSheets()" style="margin-top:15px;">📤 Submit Results to Google Sheets</button>
         </div>
-        <div id="notYet" class="callout warn">Complete the practical examination and reach 70% overall (with 70% on the exam) to unlock your certificate.</div>
+        <div id="notYet" class="callout warn">To unlock your certificate, you need <b>at least 50% in every module</b> and <b>70% overall</b>. Keep working through the modules!</div>
       </div>
     </section>
 
@@ -933,9 +933,9 @@ function gradeFinal(){
   cat.practicalExam.earned = examPct;
   score += n;
   const finalFb = document.getElementById("finalFb");
-  finalFb.textContent = `Final examination: ${n}/${finals.length} (${examPct}%). ${examPct>=70 ? "✓ Passed." : "✗ Not yet passed — review the modules and retry."}`;
-  finalFb.style.color = examPct>=70 ? "var(--green)" : "var(--red)";
-  if(examPct>=70) tasks.add("exam");
+  finalFb.textContent = `Final examination: ${n}/${finals.length} (${examPct}%). ${examPct>=50 ? "✓ Passed." : "✗ Not yet passed — review the modules and retry."}`;
+  finalFb.style.color = examPct>=50 ? "var(--green)" : "var(--red)";
+  if(examPct>=50) tasks.add("exam");
   update();
   dashboard();
   setTimeout(submitResultsToSheets, 1500);
@@ -947,14 +947,21 @@ function dashboard(){
   let pcts = {};
   Object.keys(cat).forEach(k=>{ pcts[k] = Math.round((cat[k].earned / cat[k].max) * 100); });
 
+  // Build metric display
   document.getElementById("compMetrics").innerHTML = Object.keys(labels).map(k=>
     `<div><strong>${pcts[k]}%</strong>${labels[k]}</div>`).join("");
 
   let overall = Math.round(Object.values(pcts).reduce((a,b)=>a+b,0) / Object.keys(pcts).length);
   document.getElementById("dashPct").textContent = overall + "%";
 
+  // NEW CERTIFICATE RULES:
+  // 1. All modules >= 50%
+  // 2. Overall >= 70%
+  // 3. All required tasks (variables, data, scale, clean, exam) are completed
   const requiredTasks = ["variables","data","scale","clean","exam"];
-  const pass = examSubmitted && examPct >= 70 && overall >= 70 && requiredTasks.every(t=>tasks.has(t));
+  const allModulesAbove50 = Object.values(pcts).every(p => p >= 50);
+  const pass = examSubmitted && overall >= 70 && allModulesAbove50 && requiredTasks.every(t=>tasks.has(t));
+
   document.getElementById("dashStatus").textContent = pass ? "COMPETENT" : "In progress";
   document.getElementById("badges").innerHTML = requiredTasks.filter(t=>tasks.has(t)).map(()=>`<span class="badge">🏅</span>`).join("");
 
