@@ -94,7 +94,16 @@ th{background:#eef2f7}
 .cert small{color:var(--muted)}
 footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
 @media(max-width:650px){.card{padding:16px}.cert{padding:22px}.spsstabs{overflow:auto}}
-@media print{body>*:not(#app){display:none!important}nav,.no-print,header,#guideBox{display:none!important}.section{display:none}.section:last-child{display:block}.cert{box-shadow:none}}
+
+/* ===== PRINT STYLES – certificate only ===== */
+@media print {
+  body * { visibility: hidden; }
+  .cert, .cert * { visibility: visible; }
+  .cert { position: absolute; left: 0; top: 0; width: 100%; border: 7px double #173b72; padding: 40px; }
+  .cert .no-print { display: none !important; }
+  .cert #certPhone, .cert #certAffil, .cert #certCode { display: inline !important; }
+  header, nav, .tab, .progress, .card:not(.cert) { display: none !important; }
+}
 
 /* ===== GOOGLE SITES & MOBILE EMBED FIXES ===== */
 body { overflow-x: hidden; width: 100%; }
@@ -444,8 +453,10 @@ table { display: block !important; overflow-x: auto !important; white-space: now
           <p><b>Ivy Peak Educational Services Ltd</b><br>2026</p>
           <p>_________________________________<br>Prof. O. A. Adepoju</p>
           <p><small id="certDate"></small><br><small id="certId"></small></p>
-          <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
-          <button class="btn" onclick="submitResultsToSheets()" style="margin-top:15px;">📤 Submit Results to Google Sheets</button>
+          <!-- Buttons: Submit Results first, then Print -->
+          <button class="btn" onclick="submitResultsToSheets()" style="margin:10px 0;">📤 Submit Results</button>
+          <button class="btn secondary no-print" onclick="window.print()" style="margin:10px 0;">🖨️ Print / Save as PDF</button>
+          <p id="submitMsg" style="margin-top:10px; font-weight:bold;"></p>
         </div>
         <div id="notYet" class="callout warn">To unlock your certificate, you need <b>at least 50% in every module</b> and <b>70% overall</b>. Keep working through the modules!</div>
       </div>
@@ -947,17 +958,12 @@ function dashboard(){
   let pcts = {};
   Object.keys(cat).forEach(k=>{ pcts[k] = Math.round((cat[k].earned / cat[k].max) * 100); });
 
-  // Build metric display
   document.getElementById("compMetrics").innerHTML = Object.keys(labels).map(k=>
     `<div><strong>${pcts[k]}%</strong>${labels[k]}</div>`).join("");
 
   let overall = Math.round(Object.values(pcts).reduce((a,b)=>a+b,0) / Object.keys(pcts).length);
   document.getElementById("dashPct").textContent = overall + "%";
 
-  // NEW CERTIFICATE RULES:
-  // 1. All modules >= 50%
-  // 2. Overall >= 70%
-  // 3. All required tasks (variables, data, scale, clean, exam) are completed
   const requiredTasks = ["variables","data","scale","clean","exam"];
   const allModulesAbove50 = Object.values(pcts).every(p => p >= 50);
   const pass = examSubmitted && overall >= 70 && allModulesAbove50 && requiredTasks.every(t=>tasks.has(t));
@@ -986,16 +992,46 @@ function dashboard(){
 }
 
 /* ============================================================
-   GOOGLE SHEETS SUBMISSION – with online/offline queue
+   GOOGLE SHEETS SUBMISSION – Fixed CORS and error handling
    ============================================================ */
 const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwGK3ih_DzeIC6vNP-gClTGDuVkYOZw9kNLfpy_feye1qJtLDg0JvTTmgvMBqudgRphMg/exec';
 
 function submitResultsToSheets() {
+  const msg = document.getElementById('submitMsg');
+  msg.textContent = '📤 Submitting...';
+  msg.style.color = 'var(--navy)';
+
   const data = collectResultsData();
-  const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
-  queue.push(data);
-  localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
-  flushQueue();
+
+  // Send using fetch with CORS mode
+  fetch(SHEETS_WEBAPP_URL, {
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'omit',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => {
+      if (response.ok) {
+        msg.textContent = '✅ Results submitted successfully to Google Sheets!';
+        msg.style.color = 'var(--green)';
+        // Remove from queue if any
+        localStorage.removeItem('spss_submit_queue');
+      } else {
+        throw new Error('Server responded with ' + response.status);
+      }
+    })
+    .catch(err => {
+      console.warn('Submit failed, queuing for retry:', err);
+      // Fallback to queue
+      const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
+      queue.push(data);
+      localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
+      msg.textContent = '⚠️ Offline – data saved locally and will be sent when you reconnect.';
+      msg.style.color = 'var(--amber)';
+    });
 }
 
 function collectResultsData() {
@@ -1020,36 +1056,29 @@ function collectResultsData() {
   };
 }
 
-function flushQueue() {
-  if (!navigator.onLine) {
-    console.log('🌐 Offline – data queued.');
-    return;
-  }
+// Retry queued submissions when online
+window.addEventListener('online', () => {
   const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
-  if (queue.length === 0) return;
-  const data = queue[0];
-  fetch(SHEETS_WEBAPP_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-    .then(() => {
-      queue.shift();
-      localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
-      console.log('✅ Data sent to Google Sheets');
-      if (queue.length > 0) flushQueue();
+  if (queue.length > 0) {
+    console.log('🌐 Online – retrying queued submissions...');
+    // We'll just call submit again with the first queued item
+    const data = queue[0];
+    fetch(SHEETS_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'omit',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     })
-    .catch((err) => {
-      console.warn('⚠️ Send failed, will retry later:', err);
-    });
-}
-
-window.addEventListener('online', () => { console.log('🌐 Online – flushing queue…'); flushQueue(); });
-window.addEventListener('offline', () => { console.log('📡 Offline – data queued.'); });
-
-document.addEventListener('DOMContentLoaded', () => {
-  if (navigator.onLine) flushQueue();
+      .then(() => {
+        queue.shift();
+        localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
+        console.log('✅ Queued submission sent.');
+        const msg = document.getElementById('submitMsg');
+        if (msg) { msg.textContent = '✅ Results sent successfully!'; msg.style.color = 'var(--green)'; }
+      })
+      .catch(() => { /* keep in queue */ });
+  }
 });
 
 /* ---------- init ---------- */
