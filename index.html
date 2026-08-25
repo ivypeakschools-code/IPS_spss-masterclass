@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ivy Peak SPSS Introductory Masterclass 4.0</title>
+<style>
+:root{
+  --navy:#173b72;--blue:#2563eb;--sky:#eaf2ff;--green:#16803c;--red:#c62828;--amber:#b77900;
+  --ink:#263548;--muted:#64748b;--bg:#f5f7fb;--card:#fff;--line:#d7dee8;
+  --spssbg:#d4d0c8;--spssbar:#0a246a;--spssgrid:#ffffff;--spssline:#a9a9a9;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+header{background:linear-gradient(135deg,#0f2547,#2563eb);color:#fff;padding:26px 18px;text-align:center}
+header h1{margin:0;font-size:clamp(1.5rem,4vw,2.4rem)}
+header p{margin:8px 0 0;opacity:.92}
+.container{max-width:1150px;margin:auto;padding:18px 18px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin:16px 0;box-shadow:0 5px 18px #00000009}
+.auth{max-width:520px;margin:45px auto;text-align:center}
+.auth input{width:100%;padding:12px;margin:7px 0;border:1px solid var(--line);border-radius:8px;font-size:1rem}
+button,.btn{border:0;border-radius:8px;padding:10px 15px;background:var(--navy);color:#fff;font-weight:650;cursor:pointer;margin:4px 4px 4px 0;font-size:.92rem}
+.btn.secondary{background:#e7edf7;color:var(--navy)}
+.btn.ghost{background:transparent;color:var(--navy);border:1px solid var(--navy)}
+button:hover{filter:brightness(1.08)}
+button:disabled{opacity:.5;cursor:not-allowed}
+nav{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:#f5f7fb;padding:10px 0}
+.tab{background:#e5eaf2;color:#334155;font-size:.82rem;padding:8px 10px}
+.tab.active{background:var(--navy);color:#fff}
+.progress{height:12px;background:#e2e8f0;border-radius:10px;overflow:hidden}
+.bar{height:100%;width:0;background:var(--green);transition:.3s}
+.section{display:none}
+.section.active{display:block}
+.callout{padding:14px 16px;border-left:5px solid var(--blue);background:var(--sky);border-radius:7px;margin:15px 0}
+.success{background:#ecfdf3;border-left-color:var(--green)}
+.warn{background:#fff8e7;border-left-color:#d08a00}
+.danger{background:#fff0f0;border-left-color:var(--red)}
+.speak{background:#f4f0ff;border-left-color:#7c3aed;border-radius:12px;padding:14px 18px;margin:14px 0;position:relative}
+.speak b.tag{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#7c3aed;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:8px;text-align:left}
+th{background:#eef2f7}
+.pill{display:inline-block;padding:4px 9px;border-radius:999px;background:#e8eef8;color:var(--navy);font-size:.8rem;font-weight:700;margin:2px}
+.quiz{border:1px solid var(--line);border-radius:10px;padding:15px;margin:12px 0}
+.quiz label{display:block;padding:7px;border-radius:6px;cursor:pointer}
+.quiz label:hover{background:#f1f5f9}
+.feedback{font-weight:700;margin-top:7px;min-height:1.2em}
+.stepwrap{margin:10px 0 20px}
+.stepnum{display:inline-block;background:var(--amber);color:#fff;border-radius:999px;padding:3px 10px;font-size:.75rem;font-weight:800;margin-right:8px}
+.spssapp{border:1px solid #7f7f7f;border-radius:4px;overflow:hidden;background:var(--spssbg);box-shadow:0 6px 20px #0002}
+.spsstitle{background:linear-gradient(#1e4bb8,var(--spssbar));color:#fff;padding:6px 10px;font-size:.82rem;font-weight:700;display:flex;justify-content:space-between}
+.spssmenu{display:flex;gap:2px;background:#ece9d8;padding:3px 6px;font-size:.78rem;border-bottom:1px solid #a9a9a9;flex-wrap:wrap}
+.spssmenu span{padding:3px 8px;border-radius:2px;color:#222}
+.spssmenu span:hover{background:#c6d8f2;cursor:default}
+.spsstoolbar{background:#f4f2e8;border-bottom:1px solid #a9a9a9;padding:5px 8px;font-size:.72rem;color:#555}
+.spsstabs{display:flex;background:#ece9d8;border-bottom:1px solid #a9a9a9}
+.spsstabs button{background:#ded9c4;color:#222;border-radius:0;margin:0;padding:6px 16px;font-size:.78rem;border-right:1px solid #a9a9a9}
+.spsstabs button.sel{background:#fff;font-weight:800;border-bottom:2px solid #1e4bb8}
+.spssgridwrap{overflow:auto;background:#fff}
+.spssgridwrap table{margin:0;font-size:.82rem}
+.spssgridwrap th{background:#e5e1d3;font-weight:700;color:#222;position:sticky;top:0}
+.spssgridwrap td,.spssgridwrap th{border:1px solid #b9b6a9;padding:5px 7px}
+.spssgridwrap input,.spssgridwrap select{width:100%;border:1px solid #bcd;padding:4px;border-radius:2px;font-size:.8rem;background:#fffef8}
+.spssgridwrap input:focus,.spssgridwrap select:focus{outline:2px solid #1e4bb8;background:#fffef0}
+.valbtn{background:#eef3fb;color:var(--navy);border:1px solid #9db4d8;border-radius:3px;padding:3px 8px;font-size:.72rem;cursor:pointer}
+.spssstatus{background:#ece9d8;border-top:1px solid #a9a9a9;padding:4px 10px;font-size:.72rem;color:#555}
+.highlight-field{outline:3px solid #f59e0b !important;box-shadow:0 0 0 5px #fde68a55;border-radius:3px;animation:pulseGlow 1.2s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 4px #fde68a55}50%{box-shadow:0 0 0 8px #fde68a22}}
+.modalbg{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:50}
+.modalbg.show{display:flex}
+.modal{background:#f4f2e8;border:1px solid #7f7f7f;border-radius:5px;width:340px;max-width:92vw;box-shadow:0 10px 40px #0006}
+.modal .mtitle{background:linear-gradient(#1e4bb8,var(--spssbar));color:#fff;padding:7px 10px;font-size:.82rem;font-weight:700}
+.modal .mbody{padding:14px}
+.modal .mbody label{font-size:.78rem;font-weight:700;color:#333;display:block;margin-top:6px}
+.modal .mbody input{width:100%;padding:6px;border:1px solid #9aa;border-radius:3px;margin-top:2px}
+.modal .mlist{border:1px solid #bbb;background:#fff;height:90px;overflow:auto;margin-top:10px;font-size:.8rem}
+.modal .mlist div{padding:3px 6px;border-bottom:1px solid #eee}
+.modal .mbtnrow{display:flex;justify-content:flex-end;gap:6px;margin-top:12px}
+#guideBox{position:sticky;top:56px;z-index:6;background:#0a246a;color:#fff;border-radius:10px;padding:12px 16px;margin:10px 0;display:none}
+#guideBox.show{display:block}
+#guideBox .gtitle{font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:#a9c3f5}
+#guideBox p{margin:6px 0 0}
+.dropzone{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.draggable{padding:10px 14px;background:#e8eef8;border:1px solid #b7c5d9;border-radius:8px;cursor:grab;user-select:none;margin:2px}
+.draggable.selected{outline:3px solid #f59e0b}
+.drop{min-width:170px;min-height:60px;border:2px dashed #94a3b8;border-radius:8px;padding:8px;background:#fafcff}
+.drop.targetable{border-color:#2563eb;background:#eef4ff}
+.badge{font-size:2rem;margin:5px}
+.metric{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.metric div{background:#f1f5f9;padding:15px;border-radius:10px;text-align:center}
+.metric strong{font-size:1.5rem;display:block;color:var(--navy)}
+.cert{border:7px double var(--navy);padding:40px;text-align:center;background:#fff}
+.cert h2{font-size:2rem;color:var(--navy);margin:6px 0}
+.cert small{color:var(--muted)}
+footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
+@media(max-width:650px){.card{padding:16px}.cert{padding:22px}.spsstabs{overflow:auto}}
+@media print{body>*:not(#app){display:none!important}nav,.no-print,header,#guideBox{display:none!important}.section{display:none}.section:last-child{display:block}.cert{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Introductory Data Analysis with SPSS</h1>
+  <p>Interactive SPSS Laboratory · Masterclass 4.0</p>
+  <small>Ivy Peak Educational Services Ltd · 2026</small>
+</header>
+
+<div class="container">
+
+  <!-- ================= ACCESS GATE ================= -->
+  <div id="gate" class="card auth">
+    <h2>🔐 Enter the Masterclass</h2>
+    <p>This course is fully offline and stores your progress only in this browser. Please enter your full name and the access code your facilitator gave you.</p>
+    <input id="name" placeholder="Full name" autocomplete="off">
+    <input id="code" type="password" placeholder="Access code" autocomplete="off">
+    <button onclick="start()">Launch Masterclass</button>
+    <p id="gateMsg" class="feedback"></p>
+  </div>
+
+  <!-- ================= APP ================= -->
+  <div id="app" style="display:none">
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <b>Course progress</b><b id="pct">0%</b>
+      </div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <p><span class="pill" id="learner"></span> <span class="pill" id="scorepill">Score: 0</span></p>
+    </div>
+
+    <nav>
+      <button class="tab active" onclick="go(0)">1. Data</button>
+      <button class="tab" onclick="go(1)">2. Measurement</button>
+      <button class="tab" onclick="go(2)">3. SPSS</button>
+      <button class="tab" onclick="go(3)">4. Variable Lab</button>
+      <button class="tab" onclick="go(4)">5. Data Lab</button>
+      <button class="tab" onclick="go(5)">6. Import Lab</button>
+      <button class="tab" onclick="go(6)">7. Data Detective</button>
+      <button class="tab" onclick="go(7)">8. Practical Exam</button>
+      <button class="tab" onclick="go(8)">9. Certificate</button>
+    </nav>
+
+    <div id="guideBox">
+      <div class="gtitle" id="gStepLabel">Guided tutorial</div>
+      <p id="gText"></p>
+      <button class="btn secondary" onclick="stopGuide()" style="margin-top:8px">✕ Exit guided tutorial</button>
+    </div>
+
+    <!-- ===== MODULE 1 ===== -->
+    <section class="section active">
+      <div class="card">
+        <h2>1. Understanding Research Data</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        Welcome! Before we ever open SPSS, we need to agree on what "data" actually is, and how a proper research dataset is put together. Everything else in this course builds on this one idea.</div>
+        <p><b>LEARN</b> — Data are recorded observations, measurements, responses or classifications. On its own, raw data doesn't tell you much. A scattered list of 50 students' raw test scores is just data — it only becomes evidence once you organise, check, analyse and interpret it.</p>
+        <p><b>SEE</b> — Throughout this course we will build one real research project together: the <b>Student Academic Achievement Study</b>, an investigation into how study habits relate to performance in Chemistry.</p>
+        <div class="callout"><b>The research data matrix:</b> each <b>row</b> is normally a case/respondent, and each <b>column</b> is a variable. A cell contains one observed value.</div>
+        <table><tr><th>ID</th><th>Gender</th><th>Age</th><th>Study_Hours</th><th>Chemistry_Score</th></tr>
+        <tr><td>001</td><td>Male</td><td>16</td><td>5</td><td>68</td></tr>
+        <tr><td>002</td><td>Female</td><td>15</td><td>7</td><td>75</td></tr></table>
+        <p><b>TRY</b> — Look at the tiny matrix above. Each row is one student (a case). Each column is one thing being measured (a variable).</p>
+        <p><b>PRACTISE / CHECK</b></p>
+        <div id="q1"></div>
+        <div class="speak"><b class="tag">Reflect</b>
+        Before you move on: could you explain, in your own words, the difference between a "case" and a "variable" to a colleague who has never used SPSS? That is the real test of understanding — not just picking the right multiple-choice option.</div>
+        <button onclick="go(1)">Continue →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 2 ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>2. Variables and Scales of Measurement</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        This is the single most important lesson in the whole course. Get measurement scales wrong, and every statistic you compute afterwards will be meaningless — no matter how correctly SPSS calculates it.</div>
+        <p><b>LEARN</b> — A <b>variable</b> is any characteristic that can take different values. <b>Measurement</b> is the rule you use to assign numbers or categories to it.</p>
+        <table>
+          <tr><th>Scale</th><th>Meaning</th><th>Example (our study)</th></tr>
+          <tr><td>Nominal</td><td>Categories with no order</td><td>Gender, School Type</td></tr>
+          <tr><td>Ordinal</td><td>Ordered categories; gaps not assumed equal</td><td>Satisfaction (1–5)</td></tr>
+          <tr><td>Interval</td><td>Equal intervals; zero is not "nothing"</td><td>Temperature °C</td></tr>
+          <tr><td>Ratio</td><td>Equal intervals and a true zero</td><td>Age, Study Hours, Chemistry Score</td></tr>
+        </table>
+        <div class="callout"><b>SPSS simplification:</b> in Variable View, interval and ratio variables are usually represented together as <b>Scale</b>.</div>
+        <div class="callout warn"><b>Important — the coding trap:</b> when we write <code>1 = Male, 2 = Female</code>, the numbers 1 and 2 are <b>labels, not quantities</b>. Female is not "more" than Male. Coding a category with a number never makes it Scale.</div>
+        <p><b>SEE</b> — Here are the eight variables in our Student Academic Achievement Study.</p>
+        <table>
+          <tr><th>Variable</th><th>Description</th><th>Correct measurement</th></tr>
+          <tr><td>Gender</td><td>Male / Female</td><td>Nominal</td></tr>
+          <tr><td>School_Type</td><td>Public / Private</td><td>Nominal</td></tr>
+          <tr><td>Age</td><td>Student age in years</td><td>Scale</td></tr>
+          <tr><td>Study_Hours</td><td>Hours studied per week</td><td>Scale</td></tr>
+          <tr><td>Motivation</td><td>Motivation score (0–100)</td><td>Scale</td></tr>
+          <tr><td>Satisfaction</td><td>1–5 agreement response</td><td>Ordinal</td></tr>
+          <tr><td>Chemistry_Score</td><td>Achievement score (0–100)</td><td>Scale</td></tr>
+        </table>
+        <p><b>TRY — Scale Sorting Challenge</b> (drag, or tap an item then tap its bin)</p>
+        <div class="dropzone">
+          <div><b>Variables</b><div id="items"></div></div>
+          <div><b>Nominal</b><div class="drop" data-scale="nominal" ondrop="dropScale(event)" ondragover="allow(event)" onclick="clickDrop(event)"></div></div>
+          <div><b>Ordinal</b><div class="drop" data-scale="ordinal" ondrop="dropScale(event)" ondragover="allow(event)" onclick="clickDrop(event)"></div></div>
+          <div><b>Scale</b><div class="drop" data-scale="scale" ondrop="dropScale(event)" ondragover="allow(event)" onclick="clickDrop(event)"></div></div>
+        </div>
+        <p id="dragFb" class="feedback"></p>
+        <p><b>PRACTISE / CHECK — Is this correct?</b></p>
+        <div class="quiz">
+          <p>A researcher codes <b>Male = 1, Female = 2</b>, and then sets the Gender variable's <b>Measure</b> to <b>Scale</b>, reasoning "it's coded with numbers, so it must be Scale." Is this correct?</p>
+          <label><input type="radio" name="misc1" value="yes"> Yes — numbers mean it can be Scale</label>
+          <label><input type="radio" name="misc1" value="no"> No — the numbers are only category labels</label>
+          <button onclick="checkMisconception()">Check</button>
+          <div id="miscFb" class="feedback"></div>
+        </div>
+        <div id="q2"></div>
+        <button onclick="go(2)">Continue →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 3 ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>3. Getting to Know SPSS</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        SPSS looks intimidating the first time you open it. It really isn't — it's just a data file, a dictionary describing that data, a place to run procedures, and a place to read results.</div>
+        <p><b>LEARN</b> — SPSS is built around a data file, variable metadata, procedures and output, arranged behind a menu bar:</p>
+        <div class="callout"><code>File · Edit · View · Data · Transform · Analyze · Graphs · Utilities · Extensions · Window · Help</code></div>
+        <div class="metric">
+          <div><strong>Data View</strong>Cases × variables</div>
+          <div><strong>Variable View</strong>Metadata</div>
+          <div><strong>Output Viewer</strong>Results</div>
+          <div><strong>Syntax</strong>Reproducible commands</div>
+        </div>
+        <p><b>SEE</b> — <b>Data View</b> is the research data matrix in software form. <b>Variable View</b> is the data dictionary: name, type, label, value labels, missing values and measurement level.</p>
+        <div class="callout warn"><b>Golden rule:</b> do not rush to analysis. First make sure the variables and their coding correctly represent the research design.</div>
+        <div id="q3"></div>
+        <button onclick="go(3)">Enter Variable View Laboratory →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 4: VARIABLE VIEW LAB ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>4. SPSS Variable View Laboratory</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        Your task: build the data dictionary for the Student Academic Achievement Study. Get the Measure column right for every variable, and define value labels for Gender and School_Type.</div>
+        <p><b>TRY</b> — Use the simulated SPSS window below exactly as you would the real program. Click <span class="valbtn" style="pointer-events:none">Values…</span> on a categorical row to open the Value Labels dialog.</p>
+        <button class="btn secondary" onclick="startGuide()">▶ Start Guided "Follow Me" Tutorial</button>
+
+        <div class="spssapp">
+          <div class="spsstitle"><span>*Student_Academic_Achievement_Study.sav [DataSet1] - IBM SPSS Statistics Data Editor</span><span>— □ ×</span></div>
+          <div class="spssmenu"><span>File</span><span>Edit</span><span>View</span><span>Data</span><span>Transform</span><span>Analyze</span><span>Graphs</span><span>Utilities</span><span>Extensions</span><span>Window</span><span>Help</span></div>
+          <div class="spsstoolbar">Toolbar (simulation) — click a Variable View cell to edit it</div>
+          <div class="spsstabs"><button class="sel">Variable View</button><button onclick="go(4)">Data View</button></div>
+          <div class="spssgridwrap">
+            <table>
+              <thead><tr><th>#</th><th>Name</th><th>Type</th><th>Label</th><th>Values</th><th>Measure</th></tr></thead>
+              <tbody id="varBody"></tbody>
+            </table>
+          </div>
+          <div class="spssstatus">IBM SPSS Statistics Processor is ready</div>
+        </div>
+
+        <div class="callout">Set <b>Gender</b> and <b>School_Type</b> to Nominal, <b>Satisfaction</b> to Ordinal, and <b>Age, Study_Hours, Motivation, Chemistry_Score</b> to Scale. Define value labels for Gender (1=Male, 2=Female) and School_Type (1=Public, 2=Private) using the Values dialog.</div>
+
+        <button onclick="checkVariables()">Check Variable View</button>
+        <button class="secondary" onclick="resetVariables()">Reset</button>
+        <p id="varFb" class="feedback"></p>
+        <button id="toData" disabled onclick="go(4)">Open Data View Laboratory →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 5: DATA VIEW LAB ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>5. SPSS Data View Laboratory</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        Now we enter cases. Notice how every column here matches a row you just defined in Variable View — that link is the whole point of SPSS.</div>
+        <p><b>TRY</b> — Enter five students' data below, following the coding rules in the callout.</p>
+        <div class="spssapp">
+          <div class="spsstitle"><span>*Student_Academic_Achievement_Study.sav [DataSet1] - IBM SPSS Statistics Data Editor</span><span>— □ ×</span></div>
+          <div class="spssmenu"><span>File</span><span>Edit</span><span>View</span><span>Data</span><span>Transform</span><span>Analyze</span><span>Graphs</span><span>Utilities</span><span>Extensions</span><span>Window</span><span>Help</span></div>
+          <div class="spsstabs"><button onclick="go(3)">Variable View</button><button class="sel">Data View</button></div>
+          <div class="spssgridwrap">
+            <table>
+              <thead><tr><th>id</th><th>gender</th><th>school_type</th><th>age</th><th>study_hours</th><th>motivation</th><th>satisfaction</th><th>chemistry_score</th></tr></thead>
+              <tbody id="dataBody"></tbody>
+            </table>
+          </div>
+          <div class="spssstatus">IBM SPSS Statistics Processor is ready</div>
+        </div>
+        <p><button onclick="fillDemo()">Load practice dataset</button><button onclick="checkData()">Check Data</button></p>
+        <p id="dataFb" class="feedback"></p>
+        <div class="callout success"><b>Expected coding:</b> gender & school_type: 1/2 only · age: 10–25 · study_hours: 0 or more · motivation & chemistry_score: 0–100 · satisfaction: 1–5.</div>
+        <button onclick="go(5)">Next: Excel → SPSS Import Laboratory →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 6: IMPORT LAB ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>6. Excel → SPSS Import Laboratory</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        Most real datasets arrive as an Excel file, not typed straight into SPSS. Before you import anything, inspect the worksheet's structure — bad structure causes far more damage than any statistical error.</div>
+        <p><b>SEE — a well-structured worksheet</b></p>
+        <div class="spssapp">
+          <div class="spsstitle"><span>Student_Data.xlsx - Excel</span><span>— □ ×</span></div>
+          <div class="spssgridwrap">
+            <table>
+              <tr><th>Student_ID</th><th>Gender</th><th>Age</th><th>Score</th></tr>
+              <tr><td>001</td><td>Male</td><td>16</td><td>68</td></tr>
+              <tr><td>002</td><td>Female</td><td>15</td><td>75</td></tr>
+              <tr><td>003</td><td>Female</td><td>17</td><td>61</td></tr>
+            </table>
+          </div>
+        </div>
+        <h3>Import checklist</h3>
+        <ol>
+          <li>First row contains variable names.</li>
+          <li>Each subsequent row represents one case.</li>
+          <li>A column contains exactly one variable.</li>
+          <li>No merged decorative title cells or totals rows.</li>
+          <li>Inspect types, labels and missing data after import.</li>
+        </ol>
+        <div class="quiz">
+          <p><b>Which structure is best for importing?</b></p>
+          <label><input type="radio" name="imp" value="a"> A. Titles across several merged rows</label>
+          <label><input type="radio" name="imp" value="b"> B. Variable names in row 1, cases beneath</label>
+          <label><input type="radio" name="imp" value="c"> C. One respondent per worksheet</label>
+          <label><input type="radio" name="imp" value="d"> D. Totals above the variable names</label>
+          <button onclick="mcq('imp','b','impFb',3,'dataCleaning')">Check</button>
+          <div id="impFb" class="feedback"></div>
+        </div>
+        <p><b>TRY — spot the problem</b></p>
+        <div class="spssapp">
+          <div class="spsstitle"><span>Ivy_Peak_Performance.xlsx - Excel</span><span>— □ ×</span></div>
+          <div class="spssgridwrap">
+            <table>
+              <tr><td colspan="4" style="text-align:center;font-weight:800">IVY PEAK SCHOOL</td></tr>
+              <tr><td colspan="4" style="text-align:center;font-weight:700">STUDENT PERFORMANCE DATA</td></tr>
+              <tr><td colspan="4" style="text-align:center">2026</td></tr>
+              <tr><th>Gender</th><th>Age</th><th>Score</th><th></th></tr>
+              <tr><td>Male</td><td>16</td><td>67</td><td></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="quiz">
+          <p><b>Select every problem you can find in this worksheet.</b></p>
+          <label><input type="checkbox" id="wrong1"> Decorative title rows sit above the variable names</label>
+          <label><input type="checkbox" id="wrong2"> There is no ID column to identify each case</label>
+          <label><input type="checkbox" id="wrong3"> An empty, unlabelled column is included</label>
+          <label><input type="checkbox" id="wrong4"> The column headers use full sentences</label>
+          <button onclick="checkWrongSheet()">Check</button>
+          <div id="wrongFb" class="feedback"></div>
+        </div>
+        <div class="callout"><b>SPSS file types:</b> <code>.sav</code> is the standard SPSS data file; <code>.spv</code> is used for SPSS Viewer output.</div>
+        <button onclick="go(6)">Next: Data Detective →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 7: DATA DETECTIVE ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>7. Data Detective — Case File #004</h2>
+        <div class="speak"><b class="tag">Your facilitator says</b>
+        Invalid codes and impossible values quietly distort every frequency, mean, correlation and test built on top of them. Find the problems before you analyse — not after.</div>
+        <p><b>TRY</b> — Inspect the case file below. Gender must be 1 or 2. Age must be a realistic student age (10–25). Chemistry_Score must be 0–100.</p>
+        <div class="spssapp">
+          <div class="spsstitle"><span>CASE FILE: Dataset #004</span><span>— □ ×</span></div>
+          <div class="spssgridwrap">
+            <table id="badTable">
+              <tr><th>ID</th><th>Gender</th><th>Age</th><th>Chemistry_Score</th><th>Flag this row</th></tr>
+              <tr><td>001</td><td>1</td><td>16</td><td>68</td><td><input type="checkbox" id="bad1"></td></tr>
+              <tr><td>002</td><td>2</td><td>15</td><td>75</td><td><input type="checkbox" id="bad2"></td></tr>
+              <tr><td>003</td><td>3</td><td>17</td><td>61</td><td><input type="checkbox" id="bad3"></td></tr>
+              <tr><td>004</td><td>1</td><td>250</td><td>82</td><td><input type="checkbox" id="bad4"></td></tr>
+              <tr><td>005</td><td>2</td><td>16</td><td>145</td><td><input type="checkbox" id="bad5"></td></tr>
+            </table>
+          </div>
+        </div>
+        <button onclick="checkClean()">Submit findings</button>
+        <p id="cleanFb" class="feedback"></p>
+        <div id="cleanExplain"></div>
+        <div class="callout danger"><b>Why clean first?</b> An invalid gender code, an impossible age and an impossible score would each silently distort your descriptive statistics and any test built on this data.</div>
+        <button onclick="go(7)">Take Practical Examination →</button>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 8: PRACTICAL EXAM ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>8. Practical Examination</h2>
+        <p>Demonstrate introductory competence across all six skill areas. You need at least <b>80% overall</b>, and at least <b>80%</b> on this examination itself, to unlock your certificate.</p>
+        <div id="finalQuiz"></div>
+        <button onclick="gradeFinal()">Submit Final Examination</button>
+        <div id="finalFb" class="feedback"></div>
+      </div>
+    </section>
+
+    <!-- ===== MODULE 9: CERTIFICATE ===== -->
+    <section class="section">
+      <div class="card">
+        <h2>9. Competency Dashboard &amp; Certificate</h2>
+        <div class="metric" id="compMetrics"></div>
+        <div class="metric" style="margin-top:14px">
+          <div><strong id="dashPct">0%</strong>Overall competency</div>
+          <div><strong id="dashStatus">Not yet</strong>Status</div>
+        </div>
+        <div id="badges"></div>
+
+        <div id="certArea" style="display:none" class="cert">
+          <h2>CERTIFICATE OF COMPETENCE</h2>
+          <p>This certifies that</p>
+          <h1 id="certName"></h1>
+          <p>has demonstrated introductory competence in data structures, variables and measurement, SPSS interface navigation, variable definition, data entry, Excel data import and basic data-quality assessment, as part of the</p>
+          <h2 style="font-size:1.5rem">STUDENT ACADEMIC ACHIEVEMENT STUDY — SPSS PRACTICUM</h2>
+          <p><b>Competency Level:</b> <span id="certLevel"></span> &nbsp;·&nbsp; <b>Score:</b> <span id="certScore"></span></p>
+          <p><b>Ivy Peak Educational Services Ltd</b><br>2026</p>
+          <p>_________________________________<br>Prof. O. A. Adepoju</p>
+          <p><small id="certDate"></small><br><small id="certId"></small></p>
+          <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
+          <button class="btn" onclick="submitResultsToSheets()" style="margin-top:15px;">📤 Submit Results to Google Sheets</button>
+        </div>
+        <div id="notYet" class="callout warn">Complete the practical examination and reach 80% overall to unlock your certificate.</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer>© 2026 Ivy Peak Educational Services Ltd · Introductory SPSS Masterclass 4.0 · Self-contained offline edition</footer>
+
+<!-- Value Labels modal -->
+<div class="modalbg" id="modalbg">
+  <div class="modal">
+    <div class="mtitle" id="modalTitle">Value Labels</div>
+    <div class="mbody">
+      <label>Value</label><input id="mVal" placeholder="e.g. 1">
+      <label>Label</label><input id="mLab" placeholder="e.g. Male">
+      <div style="text-align:right;margin-top:6px"><button class="btn secondary" onclick="addValueLabel()" style="margin:0">Add</button></div>
+      <div class="mlist" id="mList"></div>
+      <div class="mbtnrow">
+        <button class="btn secondary" onclick="closeModal()">Cancel</button>
+        <button onclick="okModal()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ACCESS CONTROL
+   Change ACCESS_CODE below before distributing.
+   ========================================================= */
+const ACCESS_CODE = "IVYPEAK2026";
+
+let user = "", score = 0, answered = new Set(), tasks = new Set(), current = 0;
+let examSubmitted = false, examPct = 0;
+
+/* competency point trackers: earned / max */
+const cat = {
+  knowledge:    {earned:0, max:6},
+  measurement:  {earned:0, max:7},
+  spssNav:      {earned:0, max:15},
+  dataEntry:    {earned:0, max:10},
+  dataCleaning: {earned:0, max:18},
+  practicalExam:{earned:0, max:100}
+};
+function addCat(name, pts){ cat[name].earned = Math.min(cat[name].max, cat[name].earned + pts); }
+
+function start(){
+  let n = document.getElementById("name").value.trim();
+  let c = document.getElementById("code").value.trim();
+  const gateMsg = document.getElementById("gateMsg");
+  if(!n){ gateMsg.textContent = "Please enter your full name."; gateMsg.style.color="var(--red)"; return; }
+  if(c !== ACCESS_CODE){ gateMsg.textContent = "That access code is not recognised. Please check with your facilitator."; gateMsg.style.color="var(--red)"; return; }
+  user = n;
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("learner").textContent = user;
+  build();
+  update();
+}
+
+/* ---------- module 1-3 self checks ---------- */
+const qsets = [
+  ["q1","In the Student Academic Achievement Study, each row of the data matrix represents:","b",
+    "A. A single variable such as Age","B. A single student (case)","C. A statistical test","D. The whole dataset"],
+  ["q2","A student's satisfaction rating (1–5) is best treated as:","b",
+    "A. Nominal","B. Ordinal","C. Ratio","D. Purely qualitative narrative"],
+  ["q3","Where are variable labels and measurement levels normally defined?","c",
+    "A. Output Viewer","B. Data View only","C. Variable View","D. Chart Builder"]
+];
+function build(){
+  qsets.forEach((q,i)=>{
+    let el = document.getElementById(q[0]);
+    el.innerHTML = `<div class="quiz"><p><b>${q[1]}</b></p>${["a","b","c","d"].map((x,j)=>
+      `<label><input type="radio" name="${q[0]}" value="${x}"> ${q[j+3]}</label>`).join("")}
+      <button onclick="mcq('${q[0]}','${q[2]}','${q[0]}fb',1,'knowledge')">Check</button>
+      <div id="${q[0]}fb" class="feedback"></div></div>`;
+  });
+}
+function mcq(name, ans, fb, pts, category){
+  let s = document.querySelector(`input[name="${name}"]:checked`);
+  let e = document.getElementById(fb);
+  if(!s){ e.textContent = "Select an answer."; e.style.color = "var(--red)"; return; }
+  if(s.value === ans){
+    e.textContent = "✓ Correct.";
+    e.style.color = "var(--green)";
+    if(!answered.has(name)){ score += pts; answered.add(name); if(category) addCat(category, pts); }
+  } else {
+    e.textContent = "✗ Not quite. Review the lesson above and try again.";
+    e.style.color = "var(--red)";
+  }
+  update();
+}
+
+function go(i){
+  current = i;
+  document.querySelectorAll(".section").forEach((s,j)=>s.classList.toggle("active", j===i));
+  document.querySelectorAll(".tab").forEach((b,j)=>b.classList.toggle("active", j===i));
+  if(i===7) buildFinal();
+  if(i===8) dashboard();
+  window.scrollTo(0,0);
+}
+function update(){
+  let pct = Math.min(100, Math.round(score/40*100));
+  document.getElementById("bar").style.width = pct+"%";
+  document.getElementById("pct").textContent = pct+"%";
+  document.getElementById("scorepill").textContent = "Score: "+score;
+}
+
+/* ---------- misconception check (module 2) ---------- */
+function checkMisconception(){
+  let s = document.querySelector('input[name="misc1"]:checked');
+  let e = document.getElementById("miscFb");
+  if(!s){ e.textContent = "Select an answer."; e.style.color = "var(--red)"; return; }
+  if(s.value === "no"){
+    e.innerHTML = "✓ Correct. Coding a category with numbers does not make it quantitative — 1 and 2 remain labels for Male and Female.";
+    e.style.color = "var(--green)";
+    if(!answered.has("misc1")){ score += 2; answered.add("misc1"); addCat("measurement", 2); update(); }
+  } else {
+    e.innerHTML = "⚠ Common misconception! Assigning numbers to categories does not turn them into quantities. Gender coded 1/2 is still Nominal.";
+    e.style.color = "var(--amber)";
+  }
+}
+
+/* ---------- drag & drop scale sorter (module 2) ---------- */
+const dragAnswers = {gender:"nominal", school_type:"nominal", satisfaction:"ordinal", age:"scale", study_hours:"scale"};
+const dragLabels = {gender:"Gender", school_type:"School Type", satisfaction:"Satisfaction", age:"Age", study_hours:"Study Hours"};
+let selectedDrag = null;
+function initDrag(){
+  document.getElementById("items").innerHTML = Object.keys(dragAnswers).map(k=>
+    `<div class="draggable" draggable="true" id="drag_${k}" ondragstart="drag(event)" onclick="selectDrag('drag_${k}')">${dragLabels[k]}</div>`).join("");
+}
+function drag(e){ e.dataTransfer.setData("text", e.target.id); }
+function allow(e){ e.preventDefault(); }
+function selectDrag(id){
+  document.querySelectorAll(".draggable").forEach(d=>d.classList.remove("selected"));
+  if(selectedDrag === id){ selectedDrag = null; return; }
+  selectedDrag = id;
+  document.getElementById(id).classList.add("selected");
+}
+function clickDrop(e){
+  if(!selectedDrag) return;
+  const el = document.getElementById(selectedDrag);
+  if(!el) return;
+  if(el.parentElement.classList.contains("drop")) el.parentElement.removeChild(el);
+  e.currentTarget.appendChild(el);
+  el.classList.remove("selected");
+  selectedDrag = null;
+  evaluateDrag();
+}
+function dropScale(e){
+  e.preventDefault();
+  const id = e.dataTransfer.getData("text");
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(el.parentElement.classList.contains("drop")) el.parentElement.removeChild(el);
+  e.currentTarget.appendChild(el);
+  evaluateDrag();
+}
+function evaluateDrag(){
+  let placed = document.querySelectorAll(".drop .draggable").length;
+  const fb = document.getElementById("dragFb");
+  if(placed < Object.keys(dragAnswers).length){
+    fb.textContent = `${placed}/${Object.keys(dragAnswers).length} placed…`;
+    fb.style.color = "var(--muted)";
+    return;
+  }
+  let correctCount = 0;
+  document.querySelectorAll(".drop").forEach(d=>{
+    [...d.children].forEach(x=>{
+      let key = x.id.replace("drag_","");
+      if(d.dataset.scale === dragAnswers[key]) correctCount++;
+    });
+  });
+  let all = correctCount === Object.keys(dragAnswers).length;
+  fb.textContent = all ? "✓ All five classifications correct." : `✗ ${correctCount}/${Object.keys(dragAnswers).length} correct — review and adjust.`;
+  fb.style.color = all ? "var(--green)" : "var(--red)";
+  if(!tasks.has("scale")){
+    let delta = correctCount - (window.__lastDragCorrect || 0);
+    if(delta > 0){ score += delta; addCat("measurement", delta); }
+    window.__lastDragCorrect = correctCount;
+    if(all){ tasks.add("scale"); update(); }
+    update();
+  }
+}
+
+/* ---------- VARIABLE VIEW LAB ---------- */
+const vars = [
+  {name:"id", type:"Numeric", label:"Student identifier", measure:"Nominal", values:null, editableValues:false},
+  {name:"gender", type:"Numeric", label:"Student gender", measure:"Nominal", values:{}, editableValues:true, expected:{"1":"male","2":"female"}},
+  {name:"school_type", type:"Numeric", label:"Type of school attended", measure:"Nominal", values:{}, editableValues:true, expected:{"1":"public","2":"private"}},
+  {name:"age", type:"Numeric", label:"Student age in years", measure:"Scale", values:null, editableValues:false},
+  {name:"study_hours", type:"Numeric", label:"Study hours per week", measure:"Scale", values:null, editableValues:false},
+  {name:"motivation", type:"Numeric", label:"Motivation score", measure:"Scale", values:null, editableValues:false},
+  {name:"satisfaction", type:"Numeric", label:"Satisfaction level", measure:"Ordinal", values:null, editableValues:false},
+  {name:"chemistry_score", type:"Numeric", label:"Chemistry achievement score", measure:"Scale", values:null, editableValues:false}
+];
+const expectedMeasure = {id:"Nominal", gender:"Nominal", school_type:"Nominal", age:"Scale", study_hours:"Scale", motivation:"Scale", satisfaction:"Ordinal", chemistry_score:"Scale"};
+let learnerVars = [];
+
+function resetVariables(){
+  learnerVars = vars.map(v=>({...v, measure:"Nominal", values:v.editableValues ? {} : v.values}));
+  renderVars();
+}
+function renderVars(){
+  const body = document.getElementById("varBody");
+  body.innerHTML = learnerVars.map((v,i)=>{
+    let valuesCell = v.editableValues
+      ? `<button class="valbtn" onclick="openValueModal(${i})">Values…</button> <span id="valSummary${i}" style="font-size:.72rem;color:#555">${summarizeValues(v.values)}</span>`
+      : `<span style="color:#888">None</span>`;
+    return `<tr id="varRow${i}">
+      <td>${i+1}</td>
+      <td><input value="${v.name}" disabled style="background:#f3f3ee"></td>
+      <td><select disabled><option>${v.type}</option></select></td>
+      <td><input id="vl${i}" value="${v.label}" onchange="learnerVars[${i}].label=this.value"></td>
+      <td>${valuesCell}</td>
+      <td><select id="vm${i}" onchange="learnerVars[${i}].measure=this.value; if(guideActive) guideCheckStep();">
+            <option ${v.measure==="Nominal"?"selected":""}>Nominal</option>
+            <option ${v.measure==="Ordinal"?"selected":""}>Ordinal</option>
+            <option ${v.measure==="Scale"?"selected":""}>Scale</option>
+          </select></td>
+    </tr>`;
+  }).join("");
+}
+function summarizeValues(values){
+  if(!values || Object.keys(values).length===0) return "(none defined)";
+  return Object.entries(values).map(([k,v])=>`${k}=${v}`).join("; ");
+}
+
+let modalVarIndex = null, modalTemp = {};
+function openValueModal(i){
+  modalVarIndex = i;
+  modalTemp = {...learnerVars[i].values};
+  document.getElementById("modalTitle").textContent = `Value Labels — ${learnerVars[i].name}`;
+  document.getElementById("mVal").value = "";
+  document.getElementById("mLab").value = "";
+  renderModalList();
+  document.getElementById("modalbg").classList.add("show");
+  if(guideActive) guideCheckStep();
+}
+function renderModalList(){
+  const list = document.getElementById("mList");
+  let entries = Object.entries(modalTemp);
+  list.innerHTML = entries.length
+    ? entries.map(([k,v])=>`<div>${k} = ${v}</div>`).join("")
+    : `<div style="color:#999">No value labels added yet.</div>`;
+}
+function addValueLabel(){
+  let val = document.getElementById("mVal").value.trim();
+  let lab = document.getElementById("mLab").value.trim();
+  if(!val || !lab) return;
+  modalTemp[val] = lab;
+  document.getElementById("mVal").value = "";
+  document.getElementById("mLab").value = "";
+  renderModalList();
+  if(guideActive) guideCheckStep();
+}
+function closeModal(){ document.getElementById("modalbg").classList.remove("show"); modalVarIndex = null; }
+function okModal(){
+  if(modalVarIndex !== null){
+    learnerVars[modalVarIndex].values = {...modalTemp};
+    renderVars();
+  }
+  closeModal();
+  if(guideActive) guideCheckStep();
+}
+
+function checkVariables(){
+  let measureOk = 0, valueOk = 0;
+  learnerVars.forEach(v=>{
+    if(v.measure === expectedMeasure[v.name]) measureOk++;
+  });
+  ["gender","school_type"].forEach(name=>{
+    let v = learnerVars.find(x=>x.name===name);
+    let ok = true;
+    Object.entries(v.expected).forEach(([code,label])=>{
+      let got = (v.values[code] || "").trim().toLowerCase();
+      if(got !== label) ok = false;
+    });
+    if(Object.keys(v.values).length !== Object.keys(v.expected).length) ok = false;
+    if(ok) valueOk++;
+  });
+
+  let deltaMeasure = measureOk - (window.__lastMeasureOk || 0);
+  let deltaValue = valueOk - (window.__lastValueOk || 0);
+  if(deltaMeasure > 0){ score += deltaMeasure; addCat("spssNav", deltaMeasure); }
+  if(deltaValue > 0){ score += deltaValue*2; addCat("spssNav", deltaValue*2); }
+  window.__lastMeasureOk = measureOk;
+  window.__lastValueOk = valueOk;
+
+  const allOk = measureOk === learnerVars.length && valueOk === 2;
+  const varFb = document.getElementById("varFb");
+  varFb.textContent = allOk
+    ? "✓ Excellent — your data dictionary is correctly specified."
+    : `Measurement levels correct: ${measureOk}/${learnerVars.length}. Value labels correct: ${valueOk}/2. Review and try again.`;
+  varFb.style.color = allOk ? "var(--green)" : "var(--red)";
+  if(allOk){
+    tasks.add("variables");
+    document.getElementById("toData").disabled = false;
+  }
+  update();
+}
+
+/* ---------- Guided "Follow Me" tutorial ---------- */
+let guideActive = false, guideStep = 0;
+const guideSteps = [
+  {label:"Step 1 of 5", text:'We are going to define the "gender" variable together. Look at row 2 in the Variable View grid — that is our Gender variable.', check:()=>true},
+  {label:"Step 2 of 5", text:'Set the Measure dropdown for Gender to "Nominal" — gender has categories with no natural order.', check:()=> learnerVars[1] && learnerVars[1].measure==="Nominal"},
+  {label:"Step 3 of 5", text:'Click the "Values…" button on the Gender row to open the Value Labels dialog.', check:()=> document.getElementById("modalbg").classList.contains("show") && modalVarIndex===1},
+  {label:"Step 4 of 5", text:'In the dialog, add Value 1 → Label Male, then Add. Then add Value 2 → Label Female, then Add.', check:()=> modalTemp["1"] && modalTemp["1"].toLowerCase()==="male" && modalTemp["2"] && modalTemp["2"].toLowerCase()==="female"},
+  {label:"Step 5 of 5", text:'Click OK to save the value labels. Gender is now fully defined — well done!', check:()=> learnerVars[1] && learnerVars[1].values["1"] && learnerVars[1].values["1"].toLowerCase()==="male" && !document.getElementById("modalbg").classList.contains("show")}
+];
+function startGuide(){
+  guideActive = true; guideStep = 0;
+  document.getElementById("guideBox").classList.add("show");
+  renderGuideStep();
+}
+function stopGuide(){
+  guideActive = false;
+  document.getElementById("guideBox").classList.remove("show");
+  clearHighlights();
+}
+function clearHighlights(){ document.querySelectorAll(".highlight-field").forEach(e=>e.classList.remove("highlight-field")); }
+function renderGuideStep(){
+  clearHighlights();
+  let s = guideSteps[guideStep];
+  document.getElementById("gStepLabel").textContent = s.label;
+  document.getElementById("gText").textContent = s.text;
+  if(guideStep===1){ let el=document.getElementById("vm1"); if(el) el.classList.add("highlight-field"); }
+  if(guideStep===2){ let row=document.getElementById("varRow1"); if(row){ let b=row.querySelector(".valbtn"); if(b) b.classList.add("highlight-field"); } }
+}
+function guideCheckStep(){
+  if(!guideActive) return;
+  let s = guideSteps[guideStep];
+  setTimeout(()=>{
+    if(s.check()){
+      if(guideStep === guideSteps.length-1){
+        document.getElementById("gText").textContent = "✓ Guided tutorial complete — you have defined the Gender variable from start to finish.";
+        if(!tasks.has("guide")){ tasks.add("guide"); score += 3; addCat("spssNav", 3); update(); }
+        setTimeout(stopGuide, 2200);
+      } else {
+        guideStep++;
+        renderGuideStep();
+      }
+    }
+  }, 150);
+}
+
+/* ---------- DATA VIEW LAB ---------- */
+function renderData(){
+  const body = document.getElementById("dataBody");
+  const cols = 8;
+  body.innerHTML = Array.from({length:5},(_,r)=>{
+    let tds = "";
+    for(let c=0;c<cols;c++){ tds += `<td><input id="d${r}${c}" value=""></td>`; }
+    return `<tr>${tds}</tr>`;
+  }).join("");
+}
+const demoRows = [
+  [1,1,1,16,5,72,4,68],
+  [2,2,2,15,7,81,5,75],
+  [3,2,1,17,3,55,3,61],
+  [4,1,2,16,6,90,4,88],
+  [5,1,1,15,2,40,2,52]
+];
+function fillDemo(){
+  demoRows.forEach((row,r)=> row.forEach((val,c)=> {
+    let el = document.getElementById(`d${r}${c}`);
+    if(el) el.value = val;
+  }));
+  setTimeout(checkData, 300);
+}
+function checkData(){
+  let validRows = 0;
+  for(let r=0;r<5;r++){
+    let g=+document.getElementById(`d${r}1`).value;
+    let st=+document.getElementById(`d${r}2`).value;
+    let age=+document.getElementById(`d${r}3`).value;
+    let sh=+document.getElementById(`d${r}4`).value;
+    let mo=+document.getElementById(`d${r}5`).value;
+    let sa=+document.getElementById(`d${r}6`).value;
+    let cs=+document.getElementById(`d${r}7`).value;
+    let ok = [1,2].includes(g) && [1,2].includes(st) && age>=10 && age<=25 && sh>=0 && mo>=0 && mo<=100 && sa>=1 && sa<=5 && cs>=0 && cs<=100;
+    if(ok) validRows++;
+  }
+  let delta = validRows*2 - (window.__lastDataOk || 0);
+  if(delta>0){ score+=delta; addCat("dataEntry", delta); }
+  window.__lastDataOk = validRows*2;
+
+  const dataFb = document.getElementById("dataFb");
+  const allOk = validRows === 5;
+  dataFb.textContent = allOk ? "✓ All five cases pass the coding rules." : `${validRows}/5 cases are valid — check gender/school_type (1/2), age (10–25), motivation & score (0–100), satisfaction (1–5).`;
+  dataFb.style.color = allOk ? "var(--green)" : "var(--red)";
+  if(allOk) tasks.add("data");
+  update();
+}
+
+/* ---------- Import lab ---------- */
+function checkWrongSheet(){
+  let picked = [document.getElementById("wrong1").checked, document.getElementById("wrong2").checked,
+                document.getElementById("wrong3").checked, document.getElementById("wrong4").checked];
+  let correct = picked[0]===true && picked[1]===false && picked[2]===true && picked[3]===false;
+  let numCorrectFlags = (picked[0]?1:0) + (picked[2]?1:0) - (picked[1]?1:0) - (picked[3]?1:0);
+  numCorrectFlags = Math.max(0, Math.min(2, numCorrectFlags));
+  let delta = numCorrectFlags*3 - (window.__lastWrongSheet || 0);
+  if(delta>0){ score += delta; addCat("dataCleaning", delta); }
+  window.__lastWrongSheet = numCorrectFlags*3;
+
+  const fb = document.getElementById("wrongFb");
+  fb.textContent = correct
+    ? "✓ Correct. The decorative title rows and the empty column would both break a clean import."
+    : "✗ Look again — the decorative title rows above the headers, and the empty unlabelled column, are the real problems here.";
+  fb.style.color = correct ? "var(--green)" : "var(--red)";
+  if(correct) tasks.add("import");
+  update();
+}
+
+/* ---------- Data Detective ---------- */
+function checkClean(){
+  const flags = {bad3:true, bad4:true, bad5:true, bad1:false, bad2:false};
+  let correctCount = 0, wrongCount = 0;
+  Object.entries(flags).forEach(([id, shouldBeChecked])=>{
+    let isChecked = document.getElementById(id).checked;
+    if(isChecked === shouldBeChecked && shouldBeChecked) correctCount++;
+    if(isChecked && !shouldBeChecked) wrongCount++;
+  });
+  let delta = correctCount*3 - (window.__lastDetective || 0);
+  if(delta>0){ score += delta; addCat("dataCleaning", delta); }
+  window.__lastDetective = correctCount*3;
+
+  const ok = correctCount === 3 && wrongCount === 0;
+  const cleanFb = document.getElementById("cleanFb");
+  cleanFb.textContent = ok ? "✓ Case closed — you correctly flagged all three problem rows." : `You correctly flagged ${correctCount}/3 real problems${wrongCount?` and flagged ${wrongCount} row(s) that were actually fine`:""}.`;
+  cleanFb.style.color = ok ? "var(--green)" : "var(--red)";
+  document.getElementById("cleanExplain").innerHTML = `
+    <div class="callout">
+      <b>Row 3:</b> Gender = 3 is an invalid code — only 1 (Male) and 2 (Female) were defined.<br>
+      <b>Row 4:</b> Age = 250 is an impossible age for a student.<br>
+      <b>Row 5:</b> Chemistry_Score = 145 is impossible on a 0–100 scale.
+    </div>`;
+  if(ok) tasks.add("clean");
+  update();
+}
+
+/* ---------- Final practical exam ---------- */
+const finals = [
+  ["f1","Which SPSS view defines variable metadata?","c",["A. Output Viewer","B. Data View","C. Variable View","D. Syntax Viewer"]],
+  ["f2","A 5-point agreement response is ordinarily:","b",["A. Nominal","B. Ordinal","C. Ratio","D. Absolute"]],
+  ["f3","What is the best first step after importing an Excel worksheet?","d",["A. Run a test immediately","B. Delete every missing value","C. Publish the results","D. Inspect structure, types, coding and missing data"]],
+  ["f4","Which is an impossible value for a 0–100 achievement score?","a",["A. 145","B. 75","C. 61","D. 98"]],
+  ["f5","In a standard data matrix, a row usually represents:","b",["A. A variable","B. A case/respondent","C. A statistical test","D. A measurement scale"]],
+  ["f6","Gender is coded 1 = Male, 2 = Female. The correct Measure in SPSS is:","c",["A. Scale, because it uses numbers","B. Ordinal, because 2 is more than 1","C. Nominal, because the numbers are only labels","D. Ratio, because there is a true zero"]],
+  ["f7","A worksheet has three merged title rows above the column headers. Before importing, you should:","b",["A. Import it as-is","B. Remove the decorative rows so row 1 holds the variable names","C. Rename the file","D. Ignore it — SPSS will fix it automatically"]],
+  ["f8","A student's age is recorded as 250. This is best described as:","d",["A. A valid outlier","B. A rounding error only","C. A missing value","D. An impossible / invalid value that needs correction"]]
+];
+function buildFinal(){
+  document.getElementById("finalQuiz").innerHTML = finals.map((q,i)=>
+    `<div class="quiz"><p><b>${i+1}. ${q[1]}</b></p>${q[3].map((o,j)=>
+      `<label><input type="radio" name="${q[0]}" value="${"abcd"[j]}"> ${o}</label>`).join("")}</div>`).join("");
+}
+function gradeFinal(){
+  let n = 0;
+  finals.forEach(q=>{
+    let s = document.querySelector(`input[name="${q[0]}"]:checked`);
+    if(s && s.value === q[2]) n++;
+  });
+  examPct = Math.round(n/finals.length*100);
+  examSubmitted = true;
+  cat.practicalExam.earned = examPct;
+  score += n;
+  const finalFb = document.getElementById("finalFb");
+  finalFb.textContent = `Final examination: ${n}/${finals.length} (${examPct}%). ${examPct>=80 ? "✓ Passed." : "✗ Not yet passed — review the modules and retry."}`;
+  finalFb.style.color = examPct>=80 ? "var(--green)" : "var(--red)";
+  if(examPct>=80) tasks.add("exam");
+  update();
+  dashboard();
+  // Auto-submit if certificate unlocked
+  setTimeout(submitResultsToSheets, 1500);
+}
+
+/* ---------- Dashboard & certificate ---------- */
+function dashboard(){
+  const labels = {knowledge:"Knowledge", measurement:"Measurement", spssNav:"SPSS Navigation", dataEntry:"Data Entry", dataCleaning:"Data Cleaning", practicalExam:"Practical Exam"};
+  let pcts = {};
+  Object.keys(cat).forEach(k=>{ pcts[k] = Math.round((cat[k].earned / cat[k].max) * 100); });
+
+  document.getElementById("compMetrics").innerHTML = Object.keys(labels).map(k=>
+    `<div><strong>${pcts[k]}%</strong>${labels[k]}</div>`).join("");
+
+  let overall = Math.round(Object.values(pcts).reduce((a,b)=>a+b,0) / Object.keys(pcts).length);
+  document.getElementById("dashPct").textContent = overall + "%";
+
+  const requiredTasks = ["variables","data","scale","clean","exam"];
+  const pass = examSubmitted && examPct>=80 && overall>=80 && requiredTasks.every(t=>tasks.has(t));
+  document.getElementById("dashStatus").textContent = pass ? "COMPETENT" : "In progress";
+  document.getElementById("badges").innerHTML = requiredTasks.filter(t=>tasks.has(t)).map(()=>`<span class="badge">🏅</span>`).join("");
+
+  if(pass){
+    document.getElementById("notYet").style.display = "none";
+    document.getElementById("certArea").style.display = "block";
+    document.getElementById("certName").textContent = user;
+    let level = overall>=93 ? "ADVANCED INTRODUCTORY" : "INTRODUCTORY";
+    document.getElementById("certLevel").textContent = level;
+    document.getElementById("certScore").textContent = overall + "%";
+    let today = new Date();
+    document.getElementById("certDate").textContent = "Date issued: " + today.toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});
+    let idNum = Math.abs(hashCode(user + today.toDateString())).toString().slice(0,4).padStart(4,"0");
+    document.getElementById("certId").textContent = "Certificate ID: IPS-SPSS-2026-" + idNum;
+  } else {
+    document.getElementById("notYet").style.display = "block";
+    document.getElementById("certArea").style.display = "none";
+  }
+}
+function hashCode(str){
+  let hash = 0;
+  for(let i=0;i<str.length;i++){ hash = ((hash<<5)-hash) + str.charCodeAt(i); hash |= 0; }
+  return hash;
+}
+
+/* ============================================================
+   GOOGLE SHEETS SUBMISSION – with online/offline queue
+   ============================================================ */
+const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwGK3ih_DzeIC6vNP-gClTGDuVkYOZw9kNLfpy_feye1qJtLDg0JvTTmgvMBqudgRphMg/exec';
+
+function submitResultsToSheets() {
+  const data = collectResultsData();
+  const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
+  queue.push(data);
+  localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
+  flushQueue();
+}
+
+function collectResultsData() {
+  const taskArr = Array.from(tasks);
+  const pct = (cat, key) => Math.round((cat[key].earned / cat[key].max) * 100);
+  return {
+    name: user || 'Anonymous',
+    overall: parseInt(document.getElementById('dashPct')?.textContent || '0'),
+    examPct: examPct || 0,
+    tasks: taskArr,
+    knowledge: pct(cat, 'knowledge'),
+    measurement: pct(cat, 'measurement'),
+    spssNav: pct(cat, 'spssNav'),
+    dataEntry: pct(cat, 'dataEntry'),
+    dataCleaning: pct(cat, 'dataCleaning'),
+    practicalExam: pct(cat, 'practicalExam'),
+    certIssued: document.getElementById('certArea')?.style.display !== 'none',
+    timestamp: new Date().toISOString()
+  };
+}
+
+function flushQueue() {
+  if (!navigator.onLine) {
+    console.log('🌐 Offline – data queued.');
+    return;
+  }
+  const queue = JSON.parse(localStorage.getItem('spss_submit_queue') || '[]');
+  if (queue.length === 0) return;
+  const data = queue[0];
+  fetch(SHEETS_WEBAPP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+    .then(() => {
+      queue.shift();
+      localStorage.setItem('spss_submit_queue', JSON.stringify(queue));
+      console.log('✅ Data sent to Google Sheets');
+      if (queue.length > 0) flushQueue();
+    })
+    .catch((err) => {
+      console.warn('⚠️ Send failed, will retry later:', err);
+    });
+}
+
+window.addEventListener('online', () => { console.log('🌐 Online – flushing queue…'); flushQueue(); });
+window.addEventListener('offline', () => { console.log('📡 Offline – data queued.'); });
+
+// Try to flush any pending queue on load
+document.addEventListener('DOMContentLoaded', () => {
+  if (navigator.onLine) flushQueue();
+});
+
+/* ---------- init ---------- */
+resetVariables();
+renderData();
+initDrag();
+</script>
+</body>
+</html>
