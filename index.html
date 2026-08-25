@@ -95,6 +95,31 @@ th{background:#eef2f7}
 footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
 @media(max-width:650px){.card{padding:16px}.cert{padding:22px}.spsstabs{overflow:auto}}
 @media print{body>*:not(#app){display:none!important}nav,.no-print,header,#guideBox{display:none!important}.section{display:none}.section:last-child{display:block}.cert{box-shadow:none}}
+
+/* ===== GOOGLE SITES & MOBILE EMBED FIXES ===== */
+body { overflow-x: hidden; width: 100%; }
+.container { width: 100%; max-width: 100% !important; padding: 8px !important; }
+.card { padding: 12px !important; margin: 8px 0 !important; }
+.speak, .callout, .quiz { padding: 10px !important; }
+.spssapp { width: 100% !important; border-radius: 4px; }
+.spssmenu { flex-wrap: wrap; }
+.spssmenu span { font-size: 0.65rem; padding: 2px 4px; }
+.spssgridwrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+.spssgridwrap table { min-width: 600px; }
+.spssgridwrap td, .spssgridwrap th { padding: 4px 4px; font-size: 0.7rem; }
+.dropzone { flex-direction: column !important; }
+.drop { width: 100% !important; min-width: unset !important; }
+.draggable { padding: 8px 12px; font-size: 0.9rem; }
+.metric { grid-template-columns: 1fr !important; }
+.metric div { padding: 10px; }
+nav { gap: 4px; }
+nav .tab { font-size: 0.65rem !important; padding: 6px 4px !important; flex: 1 0 auto; text-align: center; }
+.modal { width: 95% !important; max-width: 95vw !important; }
+input, select, button, .valbtn { font-size: 16px !important; }
+.cert { padding: 20px !important; }
+.cert h2 { font-size: 1.2rem !important; }
+.cert h1 { font-size: 1.5rem !important; }
+table { display: block !important; overflow-x: auto !important; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -109,9 +134,11 @@ footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
   <!-- ================= ACCESS GATE ================= -->
   <div id="gate" class="card auth">
     <h2>🔐 Enter the Masterclass</h2>
-    <p>This course is fully offline and stores your progress only in this browser. Please enter your full name and the access code your facilitator gave you.</p>
-    <input id="name" placeholder="Full name" autocomplete="off">
-    <input id="code" type="password" placeholder="Access code" autocomplete="off">
+    <p>Please fill in all your details to begin. Your access code was provided by your facilitator.</p>
+    <input id="fullname" placeholder="Full Name" autocomplete="off">
+    <input id="phone" placeholder="Phone Number" autocomplete="off">
+    <input id="affiliation" placeholder="Institutional Affiliation" autocomplete="off">
+    <input id="code" type="password" placeholder="Access Code" autocomplete="off">
     <button onclick="start()">Launch Masterclass</button>
     <p id="gateMsg" class="feedback"></p>
   </div>
@@ -387,7 +414,7 @@ footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
     <section class="section">
       <div class="card">
         <h2>8. Practical Examination</h2>
-        <p>Demonstrate introductory competence across all six skill areas. You need at least <b>80% overall</b>, and at least <b>80%</b> on this examination itself, to unlock your certificate.</p>
+        <p>Demonstrate introductory competence across all six skill areas. You need at least <b>70% overall</b>, and at least <b>70%</b> on this examination itself, to unlock your certificate.</p>
         <div id="finalQuiz"></div>
         <button onclick="gradeFinal()">Submit Final Examination</button>
         <div id="finalFb" class="feedback"></div>
@@ -409,6 +436,8 @@ footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
           <h2>CERTIFICATE OF COMPETENCE</h2>
           <p>This certifies that</p>
           <h1 id="certName"></h1>
+          <p><span id="certPhone"></span> · <span id="certAffil"></span></p>
+          <p>Participant Code: <strong id="certCode"></strong></p>
           <p>has demonstrated introductory competence in data structures, variables and measurement, SPSS interface navigation, variable definition, data entry, Excel data import and basic data-quality assessment, as part of the</p>
           <h2 style="font-size:1.5rem">STUDENT ACADEMIC ACHIEVEMENT STUDY — SPSS PRACTICUM</h2>
           <p><b>Competency Level:</b> <span id="certLevel"></span> &nbsp;·&nbsp; <b>Score:</b> <span id="certScore"></span></p>
@@ -418,7 +447,7 @@ footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
           <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
           <button class="btn" onclick="submitResultsToSheets()" style="margin-top:15px;">📤 Submit Results to Google Sheets</button>
         </div>
-        <div id="notYet" class="callout warn">Complete the practical examination and reach 80% overall to unlock your certificate.</div>
+        <div id="notYet" class="callout warn">Complete the practical examination and reach 70% overall (with 70% on the exam) to unlock your certificate.</div>
       </div>
     </section>
 
@@ -446,17 +475,17 @@ footer{text-align:center;color:var(--muted);padding:35px;font-size:.85rem}
 
 <script>
 /* =========================================================
-   ACCESS CONTROL
-   Change ACCESS_CODE below before distributing.
+   ACCESS CONTROL & USER DATA
    ========================================================= */
 const ACCESS_CODE = "IVYPEAK2026";
 
-let user = "", score = 0, answered = new Set(), tasks = new Set(), current = 0;
+let user = "", phone = "", affiliation = "", participantCode = "";
+let score = 0, answered = new Set(), tasks = new Set(), current = 0;
 let examSubmitted = false, examPct = 0;
 
 /* competency point trackers: earned / max */
 const cat = {
-  knowledge:    {earned:0, max:6},
+  knowledge:    {earned:0, max:3},
   measurement:  {earned:0, max:7},
   spssNav:      {earned:0, max:15},
   dataEntry:    {earned:0, max:10},
@@ -466,17 +495,32 @@ const cat = {
 function addCat(name, pts){ cat[name].earned = Math.min(cat[name].max, cat[name].earned + pts); }
 
 function start(){
-  let n = document.getElementById("name").value.trim();
+  let n = document.getElementById("fullname").value.trim();
+  let p = document.getElementById("phone").value.trim();
+  let a = document.getElementById("affiliation").value.trim();
   let c = document.getElementById("code").value.trim();
   const gateMsg = document.getElementById("gateMsg");
   if(!n){ gateMsg.textContent = "Please enter your full name."; gateMsg.style.color="var(--red)"; return; }
+  if(!p){ gateMsg.textContent = "Please enter your phone number."; gateMsg.style.color="var(--red)"; return; }
+  if(!a){ gateMsg.textContent = "Please enter your institutional affiliation."; gateMsg.style.color="var(--red)"; return; }
   if(c !== ACCESS_CODE){ gateMsg.textContent = "That access code is not recognised. Please check with your facilitator."; gateMsg.style.color="var(--red)"; return; }
-  user = n;
+  user = n; phone = p; affiliation = a;
+  // generate unique participant code: first 4 letters of name + last 4 digits of phone + timestamp hash
+  let namePart = n.replace(/\s/g,'').slice(0,4).toUpperCase();
+  let phonePart = p.replace(/\D/g,'').slice(-4);
+  let hash = Math.abs(hashCode(n + p + Date.now())).toString().slice(0,4);
+  participantCode = namePart + phonePart + hash;
   document.getElementById("gate").style.display = "none";
   document.getElementById("app").style.display = "block";
-  document.getElementById("learner").textContent = user;
+  document.getElementById("learner").textContent = user + " (" + participantCode + ")";
   build();
   update();
+}
+
+function hashCode(str){
+  let hash = 0;
+  for(let i=0;i<str.length;i++){ hash = ((hash<<5)-hash) + str.charCodeAt(i); hash |= 0; }
+  return hash;
 }
 
 /* ---------- module 1-3 self checks ---------- */
@@ -889,12 +933,11 @@ function gradeFinal(){
   cat.practicalExam.earned = examPct;
   score += n;
   const finalFb = document.getElementById("finalFb");
-  finalFb.textContent = `Final examination: ${n}/${finals.length} (${examPct}%). ${examPct>=80 ? "✓ Passed." : "✗ Not yet passed — review the modules and retry."}`;
-  finalFb.style.color = examPct>=80 ? "var(--green)" : "var(--red)";
-  if(examPct>=80) tasks.add("exam");
+  finalFb.textContent = `Final examination: ${n}/${finals.length} (${examPct}%). ${examPct>=70 ? "✓ Passed." : "✗ Not yet passed — review the modules and retry."}`;
+  finalFb.style.color = examPct>=70 ? "var(--green)" : "var(--red)";
+  if(examPct>=70) tasks.add("exam");
   update();
   dashboard();
-  // Auto-submit if certificate unlocked
   setTimeout(submitResultsToSheets, 1500);
 }
 
@@ -911,7 +954,7 @@ function dashboard(){
   document.getElementById("dashPct").textContent = overall + "%";
 
   const requiredTasks = ["variables","data","scale","clean","exam"];
-  const pass = examSubmitted && examPct>=80 && overall>=80 && requiredTasks.every(t=>tasks.has(t));
+  const pass = examSubmitted && examPct >= 70 && overall >= 70 && requiredTasks.every(t=>tasks.has(t));
   document.getElementById("dashStatus").textContent = pass ? "COMPETENT" : "In progress";
   document.getElementById("badges").innerHTML = requiredTasks.filter(t=>tasks.has(t)).map(()=>`<span class="badge">🏅</span>`).join("");
 
@@ -919,7 +962,10 @@ function dashboard(){
     document.getElementById("notYet").style.display = "none";
     document.getElementById("certArea").style.display = "block";
     document.getElementById("certName").textContent = user;
-    let level = overall>=93 ? "ADVANCED INTRODUCTORY" : "INTRODUCTORY";
+    document.getElementById("certPhone").textContent = "📞 " + phone;
+    document.getElementById("certAffil").textContent = "🏛️ " + affiliation;
+    document.getElementById("certCode").textContent = participantCode;
+    let level = overall>=85 ? "ADVANCED INTRODUCTORY" : "INTRODUCTORY";
     document.getElementById("certLevel").textContent = level;
     document.getElementById("certScore").textContent = overall + "%";
     let today = new Date();
@@ -930,11 +976,6 @@ function dashboard(){
     document.getElementById("notYet").style.display = "block";
     document.getElementById("certArea").style.display = "none";
   }
-}
-function hashCode(str){
-  let hash = 0;
-  for(let i=0;i<str.length;i++){ hash = ((hash<<5)-hash) + str.charCodeAt(i); hash |= 0; }
-  return hash;
 }
 
 /* ============================================================
@@ -955,6 +996,9 @@ function collectResultsData() {
   const pct = (cat, key) => Math.round((cat[key].earned / cat[key].max) * 100);
   return {
     name: user || 'Anonymous',
+    phone: phone || '',
+    affiliation: affiliation || '',
+    participantCode: participantCode || '',
     overall: parseInt(document.getElementById('dashPct')?.textContent || '0'),
     examPct: examPct || 0,
     tasks: taskArr,
@@ -997,7 +1041,6 @@ function flushQueue() {
 window.addEventListener('online', () => { console.log('🌐 Online – flushing queue…'); flushQueue(); });
 window.addEventListener('offline', () => { console.log('📡 Offline – data queued.'); });
 
-// Try to flush any pending queue on load
 document.addEventListener('DOMContentLoaded', () => {
   if (navigator.onLine) flushQueue();
 });
